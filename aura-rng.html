@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Aura RNG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#05050f;font-family:'Inter',sans-serif;color:#e2e8f0}
+@keyframes popIn   {0%{transform:scale(0);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes rarePop {0%{transform:scale(0.4);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes megaPop {0%{transform:scale(0) rotate(-15deg);opacity:0}60%{transform:scale(1.2) rotate(3deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes glowEpic  {0%,100%{box-shadow:0 0 6px rgba(192,132,252,.5)}50%{box-shadow:0 0 16px rgba(192,132,252,.95)}}
+@keyframes glowLeg   {0%,100%{box-shadow:0 0 8px rgba(251,191,36,.6)}50%{box-shadow:0 0 22px rgba(251,191,36,1),0 0 40px rgba(251,191,36,.4)}}
+@keyframes glowMyth  {0%,100%{box-shadow:0 0 10px rgba(249,115,22,.7)}50%{box-shadow:0 0 26px rgba(249,115,22,1),0 0 50px rgba(249,115,22,.4)}}
+@keyframes glowDiv   {0%,100%{box-shadow:0 0 12px rgba(232,121,249,.7)}50%{box-shadow:0 0 30px rgba(232,121,249,1),0 0 60px rgba(232,121,249,.5)}}
+@keyframes glowCos   {0%,100%{box-shadow:0 0 14px rgba(34,211,238,.7)}50%{box-shadow:0 0 34px rgba(34,211,238,1),0 0 70px rgba(34,211,238,.5)}}
+@keyframes glowCel   {0%,100%{box-shadow:0 0 16px rgba(254,240,138,.8)}50%{box-shadow:0 0 38px rgba(254,240,138,1),0 0 80px rgba(254,240,138,.6)}}
+@keyframes glowTrans {0%,100%{box-shadow:0 0 18px rgba(226,232,240,.8),0 0 35px rgba(226,232,240,.3)}50%{box-shadow:0 0 40px #fff,0 0 80px rgba(226,232,240,.6)}}
+@keyframes glowPrim  {0%,100%{box-shadow:0 0 20px rgba(251,146,60,.9)}50%{box-shadow:0 0 45px rgba(251,146,60,1),0 0 90px rgba(251,146,60,.5)}}
+@keyframes glowAbyss {0%,100%{box-shadow:0 0 20px rgba(220,38,38,.9)}50%{box-shadow:0 0 45px rgba(220,38,38,1),0 0 90px rgba(220,38,38,.4)}}
+@keyframes glowEtern {0%,100%{box-shadow:0 0 22px rgba(129,140,248,.9)}50%{box-shadow:0 0 50px rgba(129,140,248,1),0 0 100px rgba(129,140,248,.5)}}
+@keyframes glowOmega {0%,100%{box-shadow:0 0 25px rgba(255,255,255,.9)}50%{box-shadow:0 0 60px #fff,0 0 120px rgba(255,255,255,.6)}}
+@keyframes glowSec   {0%{box-shadow:0 0 18px rgba(99,102,241,.9)}50%{box-shadow:0 0 35px rgba(139,92,246,1),0 0 70px rgba(99,102,241,.5)}100%{box-shadow:0 0 18px rgba(99,102,241,.9)}}
+@keyframes glitchA   {0%{transform:none;filter:none;box-shadow:0 0 22px rgba(236,72,153,.9)}25%{transform:translateX(3px) skewX(2deg);filter:hue-rotate(90deg);box-shadow:0 0 40px rgba(236,72,153,1)}50%{transform:translateX(-2px);filter:hue-rotate(180deg);box-shadow:0 0 50px rgba(139,92,246,1)}75%{transform:translateX(2px);filter:hue-rotate(270deg);box-shadow:0 0 40px rgba(34,211,238,1)}100%{transform:none;filter:none}}
+@keyframes voidA     {0%,100%{filter:brightness(1) saturate(.2);box-shadow:0 0 12px rgba(71,85,105,.8)}50%{filter:brightness(.4) saturate(0) invert(.05);box-shadow:0 0 30px rgba(30,41,59,1)}}
+@keyframes rainbowI  {0%{box-shadow:0 0 28px #ff006e,0 0 56px #ff006e40}17%{box-shadow:0 0 28px #f97316,0 0 56px #f9731640}34%{box-shadow:0 0 28px #fbbf24,0 0 56px #fbbf2440}50%{box-shadow:0 0 28px #4ade80,0 0 56px #4ade8040}67%{box-shadow:0 0 28px #60a5fa,0 0 56px #60a5fa40}84%{box-shadow:0 0 28px #c084fc,0 0 56px #c084fc40}100%{box-shadow:0 0 28px #ff006e,0 0 56px #ff006e40}}
+.b-common      {animation:popIn .2s ease-out}
+.b-rare        {animation:popIn .25s ease-out}
+.b-epic        {animation:popIn .3s ease-out,glowEpic 2.5s ease-in-out .3s infinite}
+.b-legendary   {animation:rarePop .35s ease-out,glowLeg 2s ease-in-out .35s infinite}
+.b-mythic      {animation:rarePop .4s ease-out,glowMyth 1.8s ease-in-out .4s infinite}
+.b-divine      {animation:rarePop .4s ease-out,glowDiv 1.7s ease-in-out .4s infinite}
+.b-cosmic      {animation:rarePop .4s ease-out,glowCos 1.6s ease-in-out .4s infinite}
+.b-celestial   {animation:megaPop .45s ease-out,glowCel 1.5s ease-in-out .45s infinite}
+.b-transcendent{animation:megaPop .5s ease-out,glowTrans 1.4s ease-in-out .5s infinite}
+.b-primordial  {animation:megaPop .5s ease-out,glowPrim 1.3s ease-in-out .5s infinite}
+.b-abyssal     {animation:megaPop .5s ease-out,glowAbyss 1.2s ease-in-out .5s infinite}
+.b-eternal     {animation:megaPop .55s ease-out,glowEtern 1.2s ease-in-out .55s infinite}
+.b-omega       {animation:megaPop .6s ease-out,glowOmega 1s ease-in-out .6s infinite}
+.b-secret      {animation:megaPop .5s ease-out,glowSec 2s linear .5s infinite}
+.b-ultrasecret {animation:megaPop .5s ease-out,glitchA .5s steps(3) .5s infinite}
+.b-null        {animation:megaPop .5s ease-out,voidA 3s ease-in-out .5s infinite}
+.b-impossible  {animation:megaPop .6s ease-out,rainbowI 2s linear .6s infinite}
+@keyframes floatP     {0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.15)}}
+@keyframes rollPulse  {0%,100%{box-shadow:0 0 20px rgba(124,58,237,.6),0 4px 24px rgba(124,58,237,.3)}50%{box-shadow:0 0 50px rgba(167,139,250,.95),0 4px 40px rgba(124,58,237,.6)}}
+@keyframes rollTokyo  {0%,100%{box-shadow:0 0 20px rgba(232,0,13,.6)}50%{box-shadow:0 0 50px rgba(232,0,13,.95),0 0 80px rgba(232,0,13,.3)}}
+@keyframes rollInfern {0%,100%{box-shadow:0 0 20px rgba(255,69,0,.6)}50%{box-shadow:0 0 50px rgba(255,140,0,.95),0 0 80px rgba(220,38,38,.3)}}
+@keyframes rollTechy  {0%,100%{box-shadow:0 0 20px rgba(0,255,65,.5)}50%{box-shadow:0 0 50px rgba(0,255,65,.9),0 0 80px rgba(0,255,65,.2)}}
+@keyframes titleGlow  {0%,100%{text-shadow:0 0 30px rgba(167,139,250,.4)}50%{text-shadow:0 0 70px rgba(167,139,250,.9)}}
+@keyframes titleTokyo {0%,100%{text-shadow:0 0 30px rgba(232,0,13,.5)}50%{text-shadow:0 0 70px rgba(232,0,13,.9),0 0 120px rgba(255,255,255,.2)}}
+@keyframes titleInfern{0%,100%{text-shadow:0 0 30px rgba(255,69,0,.5)}50%{text-shadow:0 0 70px rgba(255,140,0,.9),0 0 120px rgba(220,38,38,.3)}}
+@keyframes titleTechy {0%,100%{text-shadow:0 0 30px rgba(0,255,65,.4)}50%{text-shadow:0 0 70px rgba(0,255,65,.9)}}
+@keyframes slideDown  {from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes notifAnim  {0%{opacity:0;transform:translateX(-50%) translateY(-14px)}12%,88%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-14px)}}
+@keyframes flashFade  {0%{opacity:.72}100%{opacity:0}}
+@keyframes spinIcon   {from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes slotFlick  {0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes fireDrift  {0%{transform:translateY(0) scale(1);opacity:.7}100%{transform:translateY(-80px) scale(0);opacity:0}}
+@keyframes matrixFall {0%{transform:translateY(-20px);opacity:1}100%{transform:translateY(100px);opacity:0}}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:#05050f}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+input{outline:none;font-family:inherit}
+button{font-family:inherit;cursor:pointer;transition:all .15s}
+button:active:not(:disabled){transform:scale(.96)}
+button:disabled{cursor:not-allowed}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect,useRef}=React;
+
+// ── RARITIES (divine→impossible made significantly harder) ────
+const RARITY={
+  common:      {label:"Common",      color:"#9ca3af",weight:20,      coins:1,           ord:1},
+  rare:        {label:"Rare",        color:"#60a5fa",weight:12,      coins:25,          ord:2},
+  epic:        {label:"Epic",        color:"#c084fc",weight:8,       coins:100,         ord:3},
+  legendary:   {label:"Legendary",   color:"#fbbf24",weight:4.5,     coins:500,         ord:4},
+  mythic:      {label:"Mythic",      color:"#f97316",weight:2.5,     coins:2500,        ord:5},
+  divine:      {label:"Divine",      color:"#e879f9",weight:0.8,     coins:12500,       ord:6},
+  cosmic:      {label:"Cosmic",      color:"#22d3ee",weight:0.28,    coins:65000,       ord:7},
+  celestial:   {label:"Celestial",   color:"#fef08a",weight:0.07,    coins:250000,      ord:8},
+  transcendent:{label:"Transcendent",color:"#e2e8f0",weight:0.035,   coins:750000,      ord:9},
+  primordial:  {label:"Primordial",  color:"#fb923c",weight:0.012,   coins:2500000,     ord:10},
+  abyssal:     {label:"Abyssal",     color:"#dc2626",weight:0.004,   coins:10000000,    ord:11},
+  eternal:     {label:"Eternal",     color:"#818cf8",weight:0.0012,  coins:50000000,    ord:12},
+  omega:       {label:"Omega",       color:"#f8fafc",weight:0.00025, coins:250000000,   ord:13},
+  secret:      {label:"Secret",      color:"#6366f1",weight:0.006,   coins:1000000000,  ord:14},
+  ultrasecret: {label:"Ultra Secret",color:"#ec4899",weight:0.00002, coins:5000000000,  ord:15},
+  null:        {label:"Null",        color:"#475569",weight:0.000002,coins:25000000000, ord:16},
+  impossible:  {label:"Impossible",  color:"#ff006e",weight:0,       coins:99999999999, ord:17},
+};
+const RK=Object.keys(RARITY);
+const TOTAL_W=RK.reduce((s,k)=>s+RARITY[k].weight,0);
+
+const AURAS=[
+  {id:"droplet",    name:"Droplet",          rarity:"common",      icon:"💧"},
+  {id:"cinder",     name:"Cinder",           rarity:"common",      icon:"🔸"},
+  {id:"flame",      name:"Flame",            rarity:"common",      icon:"🔥"},
+  {id:"breeze",     name:"Breeze",           rarity:"common",      icon:"💨"},
+  {id:"spark",      name:"Spark",            rarity:"common",      icon:"⚡"},
+  {id:"leaf",       name:"Leaf",             rarity:"common",      icon:"🍃"},
+  {id:"pebble",     name:"Pebble",           rarity:"common",      icon:"🪨"},
+  {id:"ripple",     name:"Ripple",           rarity:"common",      icon:"〰️"},
+  {id:"mist",       name:"Mist",             rarity:"common",      icon:"🌫️"},
+  {id:"thorn",      name:"Thorn",            rarity:"common",      icon:"🌵"},
+  {id:"dust",       name:"Dust",             rarity:"common",      icon:"🟤"},
+  {id:"ash",        name:"Ash",              rarity:"common",      icon:"⬜"},
+  {id:"frost",      name:"Frost",            rarity:"rare",        icon:"❄️"},
+  {id:"ember",      name:"Ember",            rarity:"rare",        icon:"✨"},
+  {id:"thunder",    name:"Thunder",          rarity:"rare",        icon:"⛈️"},
+  {id:"crystal",    name:"Crystal",          rarity:"rare",        icon:"💎"},
+  {id:"shadow",     name:"Shadow",           rarity:"rare",        icon:"🌑"},
+  {id:"tide",       name:"Tide",             rarity:"rare",        icon:"🌊"},
+  {id:"aurora",     name:"Aurora",           rarity:"rare",        icon:"🌈"},
+  {id:"blizzard",   name:"Blizzard",         rarity:"rare",        icon:"🌨️"},
+  {id:"glacier",    name:"Glacier",          rarity:"rare",        icon:"🏔️"},
+  {id:"vine",       name:"Vine",             rarity:"rare",        icon:"🌿"},
+  {id:"gale",       name:"Gale",             rarity:"rare",        icon:"🌬️"},
+  {id:"quartz",     name:"Quartz",           rarity:"rare",        icon:"🔮"},
+  {id:"solarflare", name:"Solar Flare",      rarity:"epic",        icon:"🌞"},
+  {id:"nebula",     name:"Nebula",           rarity:"epic",        icon:"🌌"},
+  {id:"inferno",    name:"Inferno",          rarity:"epic",        icon:"🌋"},
+  {id:"acidrain",   name:"Acid Rain",        rarity:"epic",        icon:"🧪"},
+  {id:"supernova",  name:"Supernova",        rarity:"epic",        icon:"💥"},
+  {id:"blackhole",  name:"Black Hole",       rarity:"epic",        icon:"🕳️"},
+  {id:"wormhole",   name:"Wormhole",         rarity:"epic",        icon:"🌀"},
+  {id:"antimatter", name:"Antimatter",       rarity:"epic",        icon:"⚛️"},
+  {id:"cursed",     name:"Cursed Flame",     rarity:"epic",        icon:"🔮"},
+  {id:"phantom",    name:"Phantom",          rarity:"epic",        icon:"👻"},
+  {id:"crystrain",  name:"Crystal Rain",     rarity:"legendary",   icon:"💠"},
+  {id:"angels",     name:"Angel's Tears",    rarity:"legendary",   icon:"😇"},
+  {id:"timerift",   name:"Time Rift",        rarity:"legendary",   icon:"⏱️"},
+  {id:"singularity",name:"Singularity",      rarity:"legendary",   icon:"🌟"},
+  {id:"paradox",    name:"Paradox",          rarity:"legendary",   icon:"♾️"},
+  {id:"ancientvoid",name:"Ancient Void",     rarity:"legendary",   icon:"🌑"},
+  {id:"divlight",   name:"Divine Light",     rarity:"legendary",   icon:"✨"},
+  {id:"infloop",    name:"Infinity Loop",    rarity:"legendary",   icon:"🔄"},
+  {id:"universe",   name:"Universe",         rarity:"legendary",   icon:"🪐"},
+  {id:"dbreath",    name:"Dragon's Breath",  rarity:"legendary",   icon:"🐉"},
+  {id:"therift",    name:"The Rift",         rarity:"mythic",      icon:"🌀"},
+  {id:"nothingness",name:"Nothingness",      rarity:"mythic",      icon:"⬛"},
+  {id:"creation",   name:"Creation",         rarity:"mythic",      icon:"🌱"},
+  {id:"pulsar",     name:"Pulsar",           rarity:"mythic",      icon:"📡"},
+  {id:"quicksand",  name:"Quicksand",        rarity:"mythic",      icon:"⏳"},
+  {id:"cometpulse", name:"Comet Pulse",      rarity:"mythic",      icon:"🌠"},
+  {id:"voidstorm",  name:"Void Storm",       rarity:"mythic",      icon:"🌪️"},
+  {id:"ethereal",   name:"Ethereal",         rarity:"mythic",      icon:"🫧"},
+  {id:"etflame",    name:"Eternal Flame",    rarity:"divine",      icon:"🕯️"},
+  {id:"sstorm",     name:"Solar Storm",      rarity:"divine",      icon:"☀️"},
+  {id:"cosbloom",   name:"Cosmic Bloom",     rarity:"divine",      icon:"🌸"},
+  {id:"quantum",    name:"Quantum",          rarity:"divine",      icon:"⚛️"},
+  {id:"starforge",  name:"Star Forge",       rarity:"divine",      icon:"⭐"},
+  {id:"holylight",  name:"Holy Light",       rarity:"divine",      icon:"💡"},
+  {id:"seraphim",   name:"Seraphim",         rarity:"divine",      icon:"👼"},
+  {id:"darkmatter", name:"Dark Matter",      rarity:"cosmic",      icon:"🌑"},
+  {id:"evhorizon",  name:"Event Horizon",    rarity:"cosmic",      icon:"🔭"},
+  {id:"voidwalk",   name:"Void Walker",      rarity:"cosmic",      icon:"👁️"},
+  {id:"astral",     name:"Astral Plane",     rarity:"cosmic",      icon:"🔮"},
+  {id:"nebcore",    name:"Nebular Core",     rarity:"cosmic",      icon:"💫"},
+  {id:"darkenergy", name:"Dark Energy",      rarity:"cosmic",      icon:"🌌"},
+  {id:"gravwave",   name:"Gravity Wave",     rarity:"cosmic",      icon:"〰️"},
+  {id:"celgen",     name:"Celestial Genesis",rarity:"celestial",   icon:"✨"},
+  {id:"celcol",     name:"Celestial Collapse",rarity:"celestial",  icon:"💥"},
+  {id:"celstorm",   name:"Celestial Storm",  rarity:"celestial",   icon:"⚡"},
+  {id:"starbirth",  name:"Star Birth",       rarity:"celestial",   icon:"🌟"},
+  {id:"celdawn",    name:"Celestial Dawn",   rarity:"celestial",   icon:"🌅"},
+  {id:"celfire",    name:"Celestial Fire",   rarity:"celestial",   icon:"🔆"},
+  {id:"ascension",  name:"Ascension",        rarity:"transcendent",icon:"🌤️"},
+  {id:"beyond",     name:"Beyond",           rarity:"transcendent",icon:"🚀"},
+  {id:"enlighten",  name:"Enlightenment",    rarity:"transcendent",icon:"💡"},
+  {id:"transcend",  name:"Transcendence",    rarity:"transcendent",icon:"🌈"},
+  {id:"apex",       name:"Apex",             rarity:"transcendent",icon:"⛰️"},
+  {id:"thechosen",  name:"The Chosen",       rarity:"transcendent",icon:"👑"},
+  {id:"prichaos",   name:"Primordial Chaos", rarity:"primordial",  icon:"🌀"},
+  {id:"prisea",     name:"Primordial Sea",   rarity:"primordial",  icon:"🌊"},
+  {id:"privoid",    name:"Primordial Void",  rarity:"primordial",  icon:"🕳️"},
+  {id:"origin",     name:"Origin",           rarity:"primordial",  icon:"🌅"},
+  {id:"theancient", name:"The Ancient",      rarity:"primordial",  icon:"🗿"},
+  {id:"leviathan",  name:"Leviathan",        rarity:"abyssal",     icon:"🐉"},
+  {id:"deepvoid",   name:"Deep Void",        rarity:"abyssal",     icon:"🌑"},
+  {id:"abytide",    name:"Abyssal Tide",     rarity:"abyssal",     icon:"🌊"},
+  {id:"darkcurr",   name:"Dark Current",     rarity:"abyssal",     icon:"💧"},
+  {id:"thedeep",    name:"The Deep",         rarity:"abyssal",     icon:"🕳️"},
+  {id:"kraken",     name:"Kraken",           rarity:"abyssal",     icon:"🦑"},
+  {id:"eternity",   name:"Eternity",         rarity:"eternal",     icon:"♾️"},
+  {id:"etabyss",    name:"Eternal Abyss",    rarity:"eternal",     icon:"🌑"},
+  {id:"etdawn",     name:"Eternal Dawn",     rarity:"eternal",     icon:"🌄"},
+  {id:"etstorm",    name:"Eternal Storm",    rarity:"eternal",     icon:"⚡"},
+  {id:"timeless",   name:"Timeless",         rarity:"eternal",     icon:"🕐"},
+  {id:"theend",     name:"The End",          rarity:"omega",       icon:"🌑"},
+  {id:"finalform",  name:"Final Form",       rarity:"omega",       icon:"⚡"},
+  {id:"lastlight",  name:"Last Light",       rarity:"omega",       icon:"✨"},
+  {id:"terminus",   name:"Terminus",         rarity:"omega",       icon:"🔴"},
+  {id:"abszero",    name:"Absolute Zero",    rarity:"omega",       icon:"❄️"},
+  {id:"theunseen",  name:"The Unseen",       rarity:"secret",      icon:"👁️"},
+  {id:"whisper",    name:"Whisper",          rarity:"secret",      icon:"💬"},
+  {id:"phveil",     name:"Phantom Veil",     rarity:"secret",      icon:"👻"},
+  {id:"theforgot",  name:"The Forgotten",    rarity:"secret",      icon:"🌑"},
+  {id:"enigma",     name:"Enigma",           rarity:"secret",      icon:"❓"},
+  {id:"forbidden",  name:"Forbidden",        rarity:"ultrasecret", icon:"🚫"},
+  {id:"theunknown", name:"The Unknown",      rarity:"ultrasecret", icon:"❓"},
+  {id:"ancsecret",  name:"Ancient Secret",   rarity:"ultrasecret", icon:"📜"},
+  {id:"corrtruth",  name:"Corrupted Truth",  rarity:"ultrasecret", icon:"💀"},
+  {id:"zero",       name:"Zero",             rarity:"null",        icon:"○"},
+  {id:"absence",    name:"The Absence",      rarity:"null",        icon:"◯"},
+  {id:"voidcore",   name:"Void Core",        rarity:"null",        icon:"🕳️"},
+  {id:"thesilence", name:"The Silence",      rarity:"null",        icon:"🔇"},
+  // ── IMPOSSIBLE — secret admin auras (code only) ──
+  {id:"owner_aura", name:"Yamanote Soul",    rarity:"impossible",  icon:"🚆", theme:"tokyo"},
+  {id:"sino_aura",  name:"Hellfire King",    rarity:"impossible",  icon:"😈", theme:"infernal"},
+  {id:"paji_aura",  name:"The Grid",         rarity:"impossible",  icon:"💻", theme:"techy"},
+];
+
+const THEMES={
+  default: {bodyBg:"#05050f",titleGrad:"linear-gradient(135deg,#c7d2fe,#a5b4fc,#818cf8)",titleAnim:"titleGlow 3s ease-in-out infinite",rollBtn:"linear-gradient(135deg,#7c3aed,#6d28d9,#5b21b6)",rollAnim:"rollPulse 2.5s ease-in-out infinite",cardBg:"rgba(255,255,255,0.025)",cardBorder:"rgba(255,255,255,0.065)",statBg:"rgba(255,255,255,0.04)",statBorder:"rgba(255,255,255,0.07)",accent:"#818cf8",muted:"#334155",font:"'Inter',sans-serif",title:"AURA RNG",sub:null},
+  tokyo:   {bodyBg:"#03060f",titleGrad:"linear-gradient(135deg,#e8000d,#ff6b6b,#ffffff,#0072bc)",titleAnim:"titleTokyo 3s ease-in-out infinite",rollBtn:"linear-gradient(135deg,#e8000d,#b80000,#800000)",rollAnim:"rollTokyo 2.5s ease-in-out infinite",cardBg:"rgba(232,0,13,0.05)",cardBorder:"rgba(232,0,13,0.15)",statBg:"rgba(232,0,13,0.07)",statBorder:"rgba(232,0,13,0.2)",accent:"#e8000d",muted:"#4a1010",font:"'Cinzel',serif",title:"東京 AURA RNG",sub:"山手線 · YAMANOTE LINE"},
+  infernal:{bodyBg:"#0f0200",titleGrad:"linear-gradient(135deg,#ff4500,#ff6a00,#ffa500)",titleAnim:"titleInfern 3s ease-in-out infinite",rollBtn:"linear-gradient(135deg,#dc2626,#ea580c,#f97316)",rollAnim:"rollInfern 2s ease-in-out infinite",cardBg:"rgba(255,69,0,0.05)",cardBorder:"rgba(255,69,0,0.14)",statBg:"rgba(255,69,0,0.07)",statBorder:"rgba(255,69,0,0.18)",accent:"#ff4500",muted:"#4a1800",font:"'Inter',sans-serif",title:"AURA RNG",sub:"🔥 HELLFIRE REALM 🔥"},
+  techy:   {bodyBg:"#000d00",titleGrad:"linear-gradient(135deg,#00ff41,#00d4aa,#0088ff)",titleAnim:"titleTechy 3s ease-in-out infinite",rollBtn:"linear-gradient(135deg,#006400,#007a00,#00a000)",rollAnim:"rollTechy 2s ease-in-out infinite",cardBg:"rgba(0,255,65,0.03)",cardBorder:"rgba(0,255,65,0.1)",statBg:"rgba(0,255,65,0.05)",statBorder:"rgba(0,255,65,0.12)",accent:"#00ff41",muted:"#0a2a0a",font:"'Share Tech Mono',monospace",title:"AURA_RNG",sub:"> SYSTEM ONLINE_"},
+};
+
+// ── SVG TRAIN COMPONENTS ──────────────────────────────────────
+// E235-1000 series — Yamanote Line (green stripe, white body, 2-car unit)
+function E235() {
+  const b="#f3f3f3", g="#9ACD32", w="#cde4f8";
+  return (
+    <g>
+      {/* Car 1 */}
+      <rect x="-97" y="-8" width="90" height="16" rx="3" fill={b}/>
+      <rect x="-97" y="-8" width="90" height="3" rx="1.5" fill={g}/>
+      <rect x="-97" y="5" width="90" height="3" rx="1.5" fill={g}/>
+      <rect x="-93" y="-4" width="16" height="6" rx="1.5" fill={w}/>
+      <rect x="-74" y="-4" width="10" height="6" rx="1.5" fill={w}/>
+      <rect x="-61" y="-4" width="10" height="6" rx="1.5" fill={w}/>
+      <rect x="-48" y="-4" width="10" height="6" rx="1.5" fill={w}/>
+      <rect x="-32" y="-4" width="16" height="6" rx="1.5" fill={w}/>
+      <line x1="-76" y1="-8" x2="-76" y2="8" stroke="#d0d0d0" strokeWidth="0.7"/>
+      <line x1="-50" y1="-8" x2="-50" y2="8" stroke="#d0d0d0" strokeWidth="0.7"/>
+      {/* Coupler */}
+      <rect x="-8" y="-2.5" width="14" height="5" rx="1.5" fill="#b0b0b0"/>
+      {/* Car 2 */}
+      <rect x="7" y="-8" width="90" height="16" rx="3" fill={b}/>
+      <rect x="7" y="-8" width="90" height="3" rx="1.5" fill={g}/>
+      <rect x="7" y="5" width="90" height="3" rx="1.5" fill={g}/>
+      <rect x="10" y="-4" width="16" height="6" rx="1.5" fill={w}/>
+      <rect x="29" y="-4" width="10" height="6" rx="1.5" fill={w}/>
+      <rect x="42" y="-4" width="10" height="6" rx="1.5" fill={w}/>
+      <rect x="55" y="-4" width="10" height="6" rx="1.5" fill={w}/>
+      <rect x="70" y="-4" width="16" height="6" rx="1.5" fill={w}/>
+      <line x1="27" y1="-8" x2="27" y2="8" stroke="#d0d0d0" strokeWidth="0.7"/>
+      <line x1="53" y1="-8" x2="53" y2="8" stroke="#d0d0d0" strokeWidth="0.7"/>
+    </g>
+  );
+}
+
+// E233-0 series — Chuo Line Rapid (orange stripe)
+// E233-1000 series — Keihin-Tohoku (blue stripe)
+// Both use same E233 body shape with different stripe color
+function E233({stripe}) {
+  const b="#f3f3f3", w="#cde4f8";
+  return (
+    <g>
+      {/* Car 1 */}
+      <rect x="-92" y="-7" width="86" height="14" rx="2.5" fill={b}/>
+      <rect x="-92" y="-7" width="86" height="2.5" rx="1" fill={stripe}/>
+      <rect x="-92" y="4.5" width="86" height="2.5" rx="1" fill={stripe}/>
+      <rect x="-89" y="-4" width="15" height="5" rx="1.5" fill={w}/>
+      <rect x="-71" y="-4" width="10" height="5" rx="1.5" fill={w}/>
+      <rect x="-58" y="-4" width="10" height="5" rx="1.5" fill={w}/>
+      <rect x="-45" y="-4" width="10" height="5" rx="1.5" fill={w}/>
+      <rect x="-30" y="-4" width="15" height="5" rx="1.5" fill={w}/>
+      <line x1="-72" y1="-7" x2="-72" y2="7" stroke="#d0d0d0" strokeWidth="0.7"/>
+      <line x1="-46" y1="-7" x2="-46" y2="7" stroke="#d0d0d0" strokeWidth="0.7"/>
+      {/* Coupler */}
+      <rect x="-7" y="-2" width="12" height="4" rx="1.5" fill="#b0b0b0"/>
+      {/* Car 2 */}
+      <rect x="5" y="-7" width="86" height="14" rx="2.5" fill={b}/>
+      <rect x="5" y="-7" width="86" height="2.5" rx="1" fill={stripe}/>
+      <rect x="5" y="4.5" width="86" height="2.5" rx="1" fill={stripe}/>
+      <rect x="8" y="-4" width="15" height="5" rx="1.5" fill={w}/>
+      <rect x="26" y="-4" width="10" height="5" rx="1.5" fill={w}/>
+      <rect x="39" y="-4" width="10" height="5" rx="1.5" fill={w}/>
+      <rect x="52" y="-4" width="10" height="5" rx="1.5" fill={w}/>
+      <rect x="67" y="-4" width="15" height="5" rx="1.5" fill={w}/>
+      <line x1="24" y1="-7" x2="24" y2="7" stroke="#d0d0d0" strokeWidth="0.7"/>
+      <line x1="50" y1="-7" x2="50" y2="7" stroke="#d0d0d0" strokeWidth="0.7"/>
+    </g>
+  );
+}
+
+// ── TOKYO BACKGROUND ─────────────────────────────────────────
+const YAM_PATH="M 500,78 C 760,78 882,192 882,350 C 882,508 760,622 500,622 C 240,622 118,508 118,350 C 118,192 240,78 500,78 Z";
+const FIRE_PARTS=[...Array(16)].map((_,i)=>({l:`${8+(i*34)%84}%`,s:10+(i*7)%14,dur:`${1.2+(i*0.18)%1.4}s`,dl:`${(i*0.14)%1.6}s`}));
+const MATRIX_COLS=[...Array(12)].map((_,i)=>({l:`${4+(i*8)}%`,dl:`${(i*0.2)%1.8}s`,dur:`${1.5+(i*0.15)%1.5}s`}));
+
+function TokyoBg(){
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:0,pointerEvents:"none",overflow:"hidden"}}>
+      <svg style={{position:"absolute",width:"100%",height:"100%"}} viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          {/* Yamanote loop */}
+          <path id="yamPath" d={YAM_PATH}/>
+          {/* Chuo Rapid — Tokyo→Takao (east to west, trains go left→right = west) */}
+          <path id="chuoPath" d="M -120,268 L 1120,268"/>
+          {/* Chuo-Sobu local — parallel, slight offset */}
+          <path id="sobuPath" d="M 1120,298 L -120,298"/>
+          {/* Keihin-Tohoku — runs south (Tokyo→Yokohama), visually right→left */}
+          <path id="keihinPath" d="M 1120,415 L -120,415"/>
+        </defs>
+
+        {/* ── TRACK LINES ── */}
+        <path d={YAM_PATH} fill="none" stroke="#9ACD32" strokeWidth="1.8" opacity="0.2"/>
+        <line x1="0" y1="268" x2="1000" y2="268" stroke="#F37321" strokeWidth="1.5" opacity="0.18"/>
+        <line x1="0" y1="298" x2="1000" y2="298" stroke="#FFD400" strokeWidth="1.2" opacity="0.12" strokeDasharray="7 5"/>
+        <line x1="0" y1="415" x2="1000" y2="415" stroke="#00A7DB" strokeWidth="1.5" opacity="0.18"/>
+        {/* Other lines (Marunouchi, Hanzomon) */}
+        <line x1="275" y1="0" x2="725" y2="700" stroke="#E60012" strokeWidth="0.9" opacity="0.09"/>
+        <line x1="500" y1="0" x2="500" y2="700" stroke="#8F76D6" strokeWidth="0.9" opacity="0.08"/>
+
+        {/* ── YAMANOTE STATION DOTS (30 stations) ── */}
+        {[...Array(30)].map((_,i)=>{
+          const a=(i/30)*Math.PI*2-Math.PI/2;
+          return <circle key={i} cx={500+382*Math.cos(a)} cy={350+272*Math.sin(a)} r="3" fill="#9ACD32" opacity="0.42"/>;
+        })}
+
+        {/* ── CHUO STATION DOTS ── */}
+        {[70,195,320,445,560,675,790,905].map((x,i)=>(
+          <circle key={i} cx={x} cy={268} r="2.5" fill="#F37321" opacity="0.38"/>
+        ))}
+
+        {/* ── KEIHIN-TOHOKU STATION DOTS ── */}
+        {[75,210,345,480,615,750,885].map((x,i)=>(
+          <circle key={i} cx={x} cy={415} r="2.5" fill="#00A7DB" opacity="0.38"/>
+        ))}
+
+        {/* ── STATION NAME LABELS ── */}
+        {/* Yamanote major stops */}
+        <text x="102" y="347" fill="#9ACD32" fontSize="11" opacity="0.5" fontFamily="sans-serif" textAnchor="end">新宿</text>
+        <text x="200" y="600" fill="#9ACD32" fontSize="10" opacity="0.42" fontFamily="sans-serif" textAnchor="middle">渋谷</text>
+        <text x="500" y="642" fill="#9ACD32" fontSize="10" opacity="0.38" fontFamily="sans-serif" textAnchor="middle">大崎</text>
+        <text x="800" y="600" fill="#9ACD32" fontSize="10" opacity="0.42" fontFamily="sans-serif" textAnchor="middle">品川</text>
+        <text x="898" y="347" fill="#9ACD32" fontSize="11" opacity="0.5" fontFamily="sans-serif" textAnchor="start">東京</text>
+        <text x="800" y="108" fill="#9ACD32" fontSize="10" opacity="0.42" fontFamily="sans-serif" textAnchor="middle">上野</text>
+        <text x="500" y="60" fill="#9ACD32" fontSize="10" opacity="0.38" fontFamily="sans-serif" textAnchor="middle">田端</text>
+        <text x="200" y="108" fill="#9ACD32" fontSize="10" opacity="0.42" fontFamily="sans-serif" textAnchor="middle">池袋</text>
+        {/* Line labels */}
+        <text x="14" y="262" fill="#F37321" fontSize="8" opacity="0.4" fontFamily="sans-serif">中央線</text>
+        <text x="14" y="410" fill="#00A7DB" fontSize="8" opacity="0.4" fontFamily="sans-serif">京浜東北</text>
+        {/* Line name: Chuo direction labels */}
+        <text x="980" y="263" fill="#F37321" fontSize="7.5" opacity="0.35" fontFamily="sans-serif" textAnchor="end">→高尾</text>
+        <text x="20" y="293" fill="#FFD400" fontSize="7.5" opacity="0.3" fontFamily="sans-serif">←千葉</text>
+        <text x="980" y="410" fill="#00A7DB" fontSize="7.5" opacity="0.35" fontFamily="sans-serif" textAnchor="end">←横浜</text>
+
+        {/* ── ANIMATED TRAINS ── */}
+
+        {/* Yamanote E235 — train 1 */}
+        <g opacity="0.75">
+          <animateMotion dur="40s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#yamPath"/>
+          </animateMotion>
+          <E235/>
+        </g>
+        {/* Yamanote E235 — train 2 */}
+        <g opacity="0.58">
+          <animateMotion dur="40s" begin="-20s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#yamPath"/>
+          </animateMotion>
+          <E235/>
+        </g>
+        {/* Yamanote E235 — train 3 */}
+        <g opacity="0.42">
+          <animateMotion dur="40s" begin="-13s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#yamPath"/>
+          </animateMotion>
+          <E235/>
+        </g>
+
+        {/* Chuo Rapid E233-0 — train 1 (going east →) */}
+        <g opacity="0.68">
+          <animateMotion dur="14s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#chuoPath"/>
+          </animateMotion>
+          <E233 stripe="#F37321"/>
+        </g>
+        {/* Chuo Rapid E233-0 — train 2 */}
+        <g opacity="0.5">
+          <animateMotion dur="14s" begin="-7s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#chuoPath"/>
+          </animateMotion>
+          <E233 stripe="#F37321"/>
+        </g>
+        {/* Chuo-Sobu local E231 (yellow, going west ←) */}
+        <g opacity="0.38">
+          <animateMotion dur="18s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#sobuPath"/>
+          </animateMotion>
+          <E233 stripe="#FFD400"/>
+        </g>
+
+        {/* Keihin-Tohoku E233-1000 — train 1 (going west ←) */}
+        <g opacity="0.62">
+          <animateMotion dur="17s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#keihinPath"/>
+          </animateMotion>
+          <E233 stripe="#00A7DB"/>
+        </g>
+        {/* Keihin-Tohoku E233-1000 — train 2 */}
+        <g opacity="0.46">
+          <animateMotion dur="17s" begin="-8.5s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#keihinPath"/>
+          </animateMotion>
+          <E233 stripe="#00A7DB"/>
+        </g>
+      </svg>
+      <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 0%,rgba(232,0,13,.06),transparent 55%)"}}/>
+    </div>
+  );
+}
+
+function InfernalBg(){
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:0,pointerEvents:"none",overflow:"hidden"}}>
+      <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 100%,rgba(255,69,0,.18),transparent 65%)"}}/>
+      <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 90%,rgba(220,38,38,.1),transparent 50%)"}}/>
+      {FIRE_PARTS.map((p,i)=><div key={i} style={{position:"absolute",left:p.l,bottom:0,width:`${p.s}px`,height:`${p.s*2}px`,borderRadius:"50% 50% 30% 30%",background:"radial-gradient(ellipse,#ff4500,transparent)",opacity:.3,animation:`fireDrift ${p.dur} ease-out ${p.dl} infinite`}}/>)}
+    </div>
+  );
+}
+
+function TechyBg(){
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:0,pointerEvents:"none",overflow:"hidden"}}>
+      <div style={{position:"absolute",inset:0,backgroundImage:"linear-gradient(rgba(0,255,65,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,65,.05) 1px,transparent 1px)",backgroundSize:"40px 40px"}}/>
+      <div style={{position:"absolute",inset:0,backgroundImage:"repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.12) 3px,rgba(0,0,0,.12) 4px)"}}/>
+      <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 0%,rgba(0,255,65,.07),transparent 55%)"}}/>
+      {MATRIX_COLS.map((col,i)=><div key={i} style={{position:"absolute",left:col.l,top:0,color:"#00ff41",fontSize:"10px",fontFamily:"'Share Tech Mono',monospace",opacity:.15,animation:`matrixFall ${col.dur} linear ${col.dl} infinite`}}>01</div>)}
+    </div>
+  );
+}
+
+// Pre-computed particles
+const PARTS=[...Array(28)].map((_,i)=>({l:`${5+(i*37)%87}%`,t:`${8+(i*53)%80}%`,s:2+(i*3)%4,dur:`${2.5+(i*0.37)%2.5}s`,dl:`${(i*0.18)%3.5}s`}));
+
+const LUCK_SHOP=[
+  {id:"l1",name:"Lucky Charm",   boost:.25, cost:500,    label:"+0.25 Luck"},
+  {id:"l2",name:"Fortune Shard", boost:.5,  cost:2500,   label:"+0.50 Luck"},
+  {id:"l3",name:"Mystic Orb",    boost:1.0, cost:10000,  label:"+1.00 Luck"},
+  {id:"l4",name:"Divine Fortune",boost:3.0, cost:75000,  label:"+3.00 Luck"},
+  {id:"l5",name:"Cosmic Essence",boost:10.0,cost:600000, label:"+10.0 Luck"},
+];
+// Auto-roll speed (slower than before: was 2000/1300/800/450/200)
+const SPEED_SHOP=[
+  {level:2,name:"Speed Lv.2",cost:300,  ms:2200,label:"2.2s"},
+  {level:3,name:"Speed Lv.3",cost:1200, ms:1500,label:"1.5s"},
+  {level:4,name:"Speed Lv.4",cost:6500, ms:1000,label:"1.0s"},
+  {level:5,name:"Speed Lv.5",cost:35000,ms:600, label:"0.6s"},
+];
+const SPEED_MS=[3500,2200,1500,1000,600];
+
+const ALL_CODES={
+  "AURA2024":  {coins:1000,msg:"🎁 +1,000 Coins!"},
+  "LUCKYSTAR": {luck:.5,   msg:"⭐ +0.5 Luck!"},
+  "FREEGEMS":  {coins:500, msg:"💎 +500 Coins!"},
+  "PRIMORDIAL":{coins:5000,msg:"🌀 +5,000 Coins!"},
+  "UPDATE1":   {coins:2500,msg:"🎉 Update 1 — +2,500 Coins!"},
+  "YAMANOTE":  {aura:"owner_aura",msg:"🚆 Yamanote Soul unlocked!"},
+  "HELLFIRE":  {aura:"sino_aura", msg:"😈 Hellfire King unlocked!"},
+  "THEGRID":   {aura:"paji_aura", msg:"💻 The Grid unlocked!"},
+};
+
+const BADGE_CLASS={common:"b-common",rare:"b-rare",epic:"b-epic",legendary:"b-legendary",mythic:"b-mythic",divine:"b-divine",cosmic:"b-cosmic",celestial:"b-celestial",transcendent:"b-transcendent",primordial:"b-primordial",abyssal:"b-abyssal",eternal:"b-eternal",omega:"b-omega",secret:"b-secret",ultrasecret:"b-ultrasecret",null:"b-null",impossible:"b-impossible"};
+
+function rollAura(luck){
+  const adj={};let tot=0;
+  RK.forEach(k=>{const w=RARITY[k].weight;if(w<=0)return;const p=k==="common"?w:w*luck;adj[k]=p;tot+=p;});
+  let r=Math.random()*tot;
+  for(const k of RK){if(!adj[k])continue;r-=adj[k];if(r<=0){const pool=AURAS.filter(a=>a.rarity===k&&!a.theme);return pool[Math.floor(Math.random()*pool.length)];}}
+  return AURAS[0];
+}
+function fmt(n){if(n>=1e12)return(n/1e12).toFixed(1)+"T";if(n>=1e9)return(n/1e9).toFixed(1)+"B";if(n>=1e6)return(n/1e6).toFixed(1)+"M";if(n>=1e3)return(n/1e3).toFixed(1)+"K";return n.toLocaleString();}
+
+function AuraDisplay({aura,onUnequip}){
+  const r=aura?RARITY[aura.rarity]:null;
+  const base=r?.color??"#1e293b";
+  const pColors=aura?.theme==="tokyo"?["#e8000d","#9ACD32","#00A7DB","#F37321","#8F76D6","#ffffff"]:aura?.theme==="infernal"?["#ff4500","#ff6a00","#ffa500","#dc2626"]:aura?.theme==="techy"?["#00ff41","#00d4aa","#0088ff"]:[base];
+  return(
+    <div style={{position:"relative",height:"190px",background:"rgba(255,255,255,0.02)",borderRadius:"10px",overflow:"hidden",border:`1px solid ${base}25`}}>
+      {aura&&<div style={{position:"absolute",inset:0,background:`radial-gradient(ellipse at 50% 70%,${base}18,transparent 65%)`,pointerEvents:"none"}}/>}
+      {aura&&PARTS.map((p,i)=>{const c=pColors[i%pColors.length];return <div key={i} style={{position:"absolute",left:p.l,top:p.t,width:`${p.s}px`,height:`${p.s}px`,borderRadius:"50%",background:c,boxShadow:`0 0 ${p.s*3}px ${c}`,opacity:.55,animation:`floatP ${p.dur} ease-in-out ${p.dl} infinite`}}/>;})  }
+      {!aura&&<div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100%",flexDirection:"column",gap:"8px"}}><div style={{fontSize:"28px",opacity:.15}}>🌀</div><div style={{color:"#1e293b",fontSize:"10px",letterSpacing:"3px",fontFamily:"'Cinzel',serif"}}>NO AURA EQUIPPED</div></div>}
+      {aura&&<div style={{position:"absolute",bottom:0,left:0,right:0,background:"linear-gradient(transparent,rgba(5,5,20,.94))",padding:"10px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{display:"flex",alignItems:"center",gap:"9px"}}><span style={{fontSize:"22px"}}>{aura.icon}</span><div><div style={{fontFamily:`${aura?.theme==="techy"?"'Share Tech Mono',monospace":"'Cinzel',serif"}`,fontSize:"13px",fontWeight:700,color:base}}>{aura.name}</div><div style={{fontSize:"8.5px",letterSpacing:"2px",color:base,opacity:.65}}>{r.label.toUpperCase()}</div></div></div><button onClick={onUnequip} style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",borderRadius:"6px",padding:"4px 9px",color:"#475569",fontSize:"10px"}}>✕ Unequip</button></div>}
+    </div>
+  );
+}
+
+function Badge({aura}){
+  const r=RARITY[aura.rarity];const ord=r.ord;
+  const bw=ord>=12?2:1;const bgA=ord>=12?"22":ord>=8?"1c":"16";const bdA=ord>=12?"75":ord>=8?"60":"45";
+  return(<div className={BADGE_CLASS[aura.rarity]||"b-common"} style={{display:"inline-flex",alignItems:"center",gap:"5px",background:`${r.color}${bgA}`,border:`${bw}px solid ${r.color}${bdA}`,borderRadius:"20px",padding:"3px 10px 3px 6px",fontSize:"11px",flexShrink:0,whiteSpace:"nowrap"}}><span style={{fontSize:"12px"}}>{aura.icon}</span><span style={{color:r.color,fontWeight:ord>=10?600:400}}>{aura.name}</span></div>);
+}
+
+function CollectionModal({collection,onClose,onEquip,equipped,th}){
+  const [filter,setFilter]=useState("all");
+  const owned=Object.keys(collection).length;
+  const show=filter==="all"?RK:[filter];
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:500,background:"rgba(2,2,14,.96)",backdropFilter:"blur(14px)",overflowY:"auto"}}>
+      <div style={{maxWidth:"680px",margin:"0 auto",padding:"24px 16px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"16px"}}>
+          <span style={{fontFamily:th.font,fontSize:"13px",letterSpacing:"4px",color:"#e2e8f0"}}>🏆 COLLECTION ({owned}/{AURAS.length})</span>
+          <button onClick={onClose} style={{background:"rgba(255,255,255,.05)",border:"1px solid rgba(255,255,255,.1)",borderRadius:"7px",padding:"6px 14px",color:"#94a3b8",fontSize:"11px"}}>CLOSE</button>
+        </div>
+        <div style={{display:"flex",gap:"5px",flexWrap:"wrap",marginBottom:"16px"}}>
+          <button onClick={()=>setFilter("all")} style={{padding:"3px 10px",borderRadius:"12px",border:`1px solid ${filter==="all"?"#94a3b8":"rgba(255,255,255,.08)"}`,background:filter==="all"?"rgba(148,163,184,.12)":"transparent",color:filter==="all"?"#e2e8f0":"#475569",fontSize:"9px"}}>ALL</button>
+          {RK.map(k=>{const rc=RARITY[k];const cnt=AURAS.filter(a=>a.rarity===k&&collection[a.id]).length;const tot=AURAS.filter(a=>a.rarity===k).length;if(!tot)return null;return <button key={k} onClick={()=>setFilter(k)} style={{padding:"3px 10px",borderRadius:"12px",border:`1px solid ${filter===k?rc.color:"rgba(255,255,255,.07)"}`,background:filter===k?`${rc.color}18`:"transparent",color:filter===k?rc.color:"#475569",fontSize:"9px"}}>{rc.label} {cnt}/{tot}</button>;})}
+        </div>
+        {show.map(rarity=>{
+          const rc=RARITY[rarity];const pool=AURAS.filter(a=>a.rarity===rarity);if(!pool.length)return null;
+          return(
+            <div key={rarity} style={{marginBottom:"20px"}}>
+              <div style={{fontSize:"9px",letterSpacing:"2px",color:rc.color,marginBottom:"8px",fontFamily:"'Cinzel',serif"}}>{rc.label} ({pool.length})</div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:"7px"}}>
+                {pool.map(aura=>{
+                  const cnt=collection[aura.id]||0;const isImp=aura.rarity==="impossible";const isEq=equipped?.id===aura.id;
+                  return(
+                    <div key={aura.id} style={{background:`${rc.color}${cnt?"10":"05"}`,border:`1px solid ${isEq?rc.color:rc.color+(cnt?"30":"10")}`,borderRadius:"10px",padding:"10px",opacity:cnt?1:isImp?.12:.25,boxShadow:isEq?`0 0 12px ${rc.color}50`:"none"}}>
+                      <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:cnt?"8px":"0"}}>
+                        <span style={{fontSize:"20px"}}>{isImp&&!cnt?"❓":aura.icon}</span>
+                        <div><div style={{fontSize:"11px",color:cnt?rc.color:"#475569",fontWeight:600}}>{isImp&&!cnt?"???":aura.name}</div><div style={{fontSize:"8px",color:"#334155",marginTop:"1px"}}>{cnt?`× ${cnt}`:isImp?"Secret":"Not found"}</div></div>
+                      </div>
+                      {cnt>0&&<button onClick={()=>{onEquip(aura);onClose();}} style={{width:"100%",padding:"5px 0",background:isEq?`${rc.color}30`:`${rc.color}15`,border:`1px solid ${rc.color}${isEq?"80":"40"}`,borderRadius:"6px",color:rc.color,fontSize:"9.5px",fontFamily:th.font,letterSpacing:"1px",cursor:"pointer",fontWeight:isEq?700:400}}>{isEq?"✓ EQUIPPED":"⚡ EQUIP"}</button>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── MAIN APP ──────────────────────────────────────────────────
+function App(){
+  const [coins,setCoins]           =useState(0);
+  const [rolls,setRolls]           =useState(0);
+  const [luck,setLuck]             =useState(1.0);
+  const [speedLvl,setSpeedLvl]     =useState(1);
+  const [equipped,setEquipped]     =useState(null);
+  const [lastRoll,setLastRoll]     =useState(null);
+  const [history,setHistory]       =useState([]);
+  const [collection,setCollection] =useState({});
+  const [auto,setAuto]             =useState(false);
+  const [shopOpen,setShopOpen]     =useState(false);
+  const [collOpen,setCollOpen]     =useState(false);
+  const [codeInput,setCodeInput]   =useState("");
+  const [usedCodes,setUsedCodes]   =useState(new Set());
+  const [notif,setNotif]           =useState(null);
+  // Manual roll animation
+  const [rolling,setRolling]       =useState(false);
+  const [slotAura,setSlotAura]     =useState(null);
+  // Auto roll animation (shorter spin)
+  const [autoSpin,setAutoSpin]     =useState(false);
+  const [autoSlot,setAutoSlot]     =useState(null);
+  const [flash,setFlash]           =useState(null);
+
+  const themeKey=equipped?.theme??"default";
+  const th=THEMES[themeKey];
+  const luckRef=useRef(luck);
+  const fastRef=useRef(null);const slowRef=useRef(null);const slowTm=useRef(null);
+  const autoSpinRef=useRef(null);const autoBusy=useRef(false);
+  useEffect(()=>{luckRef.current=luck;},[luck]);
+  useEffect(()=>{document.body.style.background=th.bodyBg;},[th]);
+
+  // Manual roll slot machine (fast then slow, 1.3s total)
+  const pool=AURAS.filter(a=>!a.theme);
+  useEffect(()=>{
+    if(!rolling){setSlotAura(null);return;}
+    fastRef.current=setInterval(()=>setSlotAura(pool[Math.floor(Math.random()*pool.length)]),65);
+    slowTm.current=setTimeout(()=>{clearInterval(fastRef.current);slowRef.current=setInterval(()=>setSlotAura(pool[Math.floor(Math.random()*pool.length)]),210);},900);
+    return()=>{clearInterval(fastRef.current);clearInterval(slowRef.current);clearTimeout(slowTm.current);};
+  },[rolling]);
+
+  function showNotif(msg){setNotif(msg);setTimeout(()=>setNotif(null),2800);}
+
+  function applyRoll(aura){
+    const r=RARITY[aura.rarity];
+    setCoins(c=>c+r.coins);setRolls(n=>n+1);setLastRoll(aura);
+    setHistory(h=>[aura,...h].slice(0,120));
+    setCollection(prev=>({...prev,[aura.id]:(prev[aura.id]||0)+1}));
+    return r;
+  }
+
+  // Manual roll: full 1.3s spin animation
+  function handleRoll(){
+    if(rolling||autoSpin)return;
+    setRolling(true);
+    setTimeout(()=>{
+      const aura=rollAura(luckRef.current);const r=applyRoll(aura);
+      if(r.ord>=5){setFlash(r.color);setTimeout(()=>setFlash(null),r.ord>=10?1000:650);}
+      setRolling(false);
+      if(r.ord>=7)showNotif(`${aura.icon} ${aura.name} — ${r.label.toUpperCase()}! +${fmt(r.coins)} coins`);
+    },1300);
+  }
+
+  // Auto roll: quick 5-frame spin (300ms), then result
+  function triggerAutoRoll(){
+    if(autoBusy.current)return;
+    autoBusy.current=true;
+    const result=rollAura(luckRef.current);
+    let ticks=0;
+    setAutoSpin(true);
+    autoSpinRef.current=setInterval(()=>{
+      setAutoSlot(pool[Math.floor(Math.random()*pool.length)]);
+      ticks++;
+      if(ticks>=5){
+        clearInterval(autoSpinRef.current);
+        setAutoSpin(false);setAutoSlot(null);
+        autoBusy.current=false;
+        const r=applyRoll(result);
+        if(r.ord>=10){setFlash(r.color);setTimeout(()=>setFlash(null),500);showNotif(`${result.icon} ${result.name} — ${r.label.toUpperCase()}!`);}
+      }
+    },60);
+  }
+
+  useEffect(()=>{
+    if(!auto){clearInterval(autoSpinRef.current);setAutoSpin(false);setAutoSlot(null);autoBusy.current=false;return;}
+    const ms=SPEED_MS[speedLvl-1];
+    const id=setInterval(triggerAutoRoll,ms);
+    return()=>{clearInterval(id);clearInterval(autoSpinRef.current);autoBusy.current=false;};
+  },[auto,speedLvl]); // eslint-disable-line
+
+  function buyLuck(item){if(coins<item.cost){showNotif("Not enough coins!");return;}setCoins(c=>c-item.cost);setLuck(l=>parseFloat((l+item.boost).toFixed(2)));showNotif(`${item.label} applied! ✨`);}
+  function buySpeed(item){if(speedLvl>=item.level)return;if(coins<item.cost){showNotif("Not enough coins!");return;}setCoins(c=>c-item.cost);setSpeedLvl(item.level);showNotif(`Speed upgraded to Lv.${item.level}!`);}
+  function redeem(){
+    const code=codeInput.trim().toUpperCase();if(!code)return;
+    if(usedCodes.has(code)){showNotif("Code already used!");return;}
+    const reward=ALL_CODES[code];if(!reward){showNotif("❌ Invalid code!");return;}
+    if(reward.coins)setCoins(c=>c+reward.coins);
+    if(reward.luck)setLuck(l=>parseFloat((l+reward.luck).toFixed(2)));
+    if(reward.aura){const aura=AURAS.find(a=>a.id===reward.aura);if(aura){setCollection(prev=>({...prev,[aura.id]:(prev[aura.id]||0)+1}));showNotif(reward.msg);}}
+    else showNotif(reward.msg);
+    setUsedCodes(prev=>new Set([...prev,code]));setCodeInput("");
+  }
+
+  const card={background:th.cardBg,border:`1px solid ${th.cardBorder}`,borderRadius:"10px",padding:"14px"};
+  const isRolling=rolling||autoSpin;
+  const currentSlot=slotAura||autoSlot;
+  const currentSlotR=currentSlot?RARITY[currentSlot.rarity]:null;
+  const isTechy=themeKey==="techy";
+
+  return(
+    <div style={{minHeight:"100vh",fontFamily:th.font,position:"relative",zIndex:1}}>
+      {themeKey==="tokyo"    &&<TokyoBg/>}
+      {themeKey==="infernal" &&<InfernalBg/>}
+      {themeKey==="techy"    &&<TechyBg/>}
+      {flash&&<div style={{position:"fixed",inset:0,zIndex:999,background:flash,pointerEvents:"none",animation:"flashFade .9s ease-out forwards"}}/>}
+      {notif&&<div style={{position:"fixed",top:"18px",left:"50%",zIndex:998,background:"rgba(10,10,28,.97)",border:"1px solid rgba(255,255,255,.12)",borderRadius:"20px",padding:"8px 20px",fontSize:"12px",color:"#e2e8f0",whiteSpace:"nowrap",animation:"notifAnim 2.8s ease forwards",backdropFilter:"blur(10px)",pointerEvents:"none"}}>{notif}</div>}
+      {collOpen&&<CollectionModal collection={collection} onClose={()=>setCollOpen(false)} onEquip={a=>{setEquipped(a);showNotif(`${a.icon} ${a.name} equipped!`);}} equipped={equipped} th={th}/>}
+
+      {/* Title */}
+      <div style={{textAlign:"center",paddingTop:"28px",paddingBottom:"14px",position:"relative",zIndex:1}}>
+        <h1 style={{fontFamily:"'Cinzel',serif",fontSize:"clamp(28px,7vw,50px)",fontWeight:900,letterSpacing:"8px",background:th.titleGrad,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",animation:th.titleAnim}}>{th.title}</h1>
+        <p style={{color:th.muted,fontSize:"10px",letterSpacing:isTechy?"2px":"5px",marginTop:"5px"}}>{th.sub??`${AURAS.length} AURAS · ${RK.length} RARITIES`}</p>
+        {th.sub&&<p style={{color:th.muted,fontSize:"9px",letterSpacing:"2px",marginTop:"3px",opacity:.6}}>{AURAS.length} AURAS · {RK.length} RARITIES</p>}
+      </div>
+
+      {/* Stats */}
+      <div style={{display:"flex",justifyContent:"center",gap:"7px",flexWrap:"wrap",padding:"0 14px 16px",position:"relative",zIndex:1}}>
+        {[{label:"Coins",val:`${fmt(coins)} 💰`},{label:"Rolls",val:rolls.toLocaleString()},{label:"Luck",val:`×${luck.toFixed(2)}`},{label:"Speed",val:`Lv.${speedLvl}`}].map(s=>(
+          <div key={s.label} style={{background:th.statBg,border:`1px solid ${th.statBorder}`,borderRadius:"8px",padding:"6px 14px",display:"flex",gap:"8px",alignItems:"baseline"}}>
+            <span style={{color:th.muted,fontSize:"9.5px",letterSpacing:"1px"}}>{s.label}</span>
+            <span style={{color:th.accent,fontSize:"13px",fontWeight:500}}>{s.val}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Content */}
+      <div style={{maxWidth:"680px",margin:"0 auto",padding:"0 14px 40px",display:"flex",flexDirection:"column",gap:"9px",position:"relative",zIndex:1}}>
+
+        {/* Equipped */}
+        <div style={card}>
+          <div style={{display:"flex",alignItems:"center",gap:"6px",marginBottom:"10px"}}>
+            <span style={{color:th.accent}}>⚡</span>
+            <span style={{fontFamily:th.font,fontSize:"9px",letterSpacing:"3px",color:th.muted}}>EQUIPPED AURA</span>
+          </div>
+          <AuraDisplay aura={equipped} onUnequip={()=>setEquipped(null)}/>
+          {lastRoll&&lastRoll.id!==equipped?.id&&!isRolling&&(
+            <button onClick={()=>setEquipped(lastRoll)} style={{marginTop:"9px",width:"100%",padding:"9px",background:`${RARITY[lastRoll.rarity].color}14`,border:`1px solid ${RARITY[lastRoll.rarity].color}40`,borderRadius:"8px",color:RARITY[lastRoll.rarity].color,fontFamily:th.font,fontSize:"9.5px",letterSpacing:"2px",display:"flex",alignItems:"center",justifyContent:"center",gap:"7px"}}>
+              ⚡ EQUIP — {lastRoll.icon} {lastRoll.name}
+            </button>
+          )}
+        </div>
+
+        {/* Slot machine (manual + auto share same display) */}
+        {isRolling&&currentSlot&&(
+          <div style={{...card,textAlign:"center",padding:autoSpin?"14px 14px":"22px 14px",border:`1px solid ${currentSlotR?.color??"#818cf8"}40`,background:`${currentSlotR?.color??"#818cf8"}08`,animation:"slotFlick .14s ease-in-out infinite"}}>
+            <div style={{fontSize:autoSpin?"36px":"54px",marginBottom:"6px",display:"inline-block",lineHeight:1,animation:"spinIcon .28s linear infinite"}}>{currentSlot.icon}</div>
+            <div style={{fontFamily:th.font,fontSize:autoSpin?"13px":"17px",color:currentSlotR?.color??"#818cf8",letterSpacing:"2px"}}>{currentSlot.name}</div>
+            {!autoSpin&&<div style={{fontSize:"9px",color:th.muted,letterSpacing:"2px",marginTop:"4px"}}>{currentSlotR?.label.toUpperCase()}</div>}
+            {autoSpin&&<div style={{fontSize:"8px",color:th.muted,letterSpacing:"1px",marginTop:"3px"}}>AUTO</div>}
+          </div>
+        )}
+
+        {/* Roll button */}
+        <button onClick={handleRoll} disabled={isRolling} style={{padding:"17px",background:isRolling?"rgba(100,100,100,.2)":th.rollBtn,border:"none",borderRadius:"10px",color:isRolling?"rgba(255,255,255,.4)":"#fff",fontFamily:th.font,fontSize:"17px",fontWeight:700,letterSpacing:"5px",cursor:isRolling?"not-allowed":"pointer",animation:isRolling?"none":th.rollAnim,display:"flex",alignItems:"center",justifyContent:"center",gap:"10px"}}>
+          {isRolling?<><span style={{display:"inline-block",animation:"spinIcon .7s linear infinite"}}>⟳</span>{autoSpin?"AUTO...":"ROLLING..."}</>:isTechy?"> ROLL":"⚡ ROLL"}
+        </button>
+
+        {/* Auto + Shop */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
+          <button onClick={()=>setAuto(a=>!a)} style={{padding:"11px",background:auto?`${th.accent}20`:"rgba(255,255,255,.03)",border:`1px solid ${auto?th.accent+"80":"rgba(255,255,255,.07)"}`,borderRadius:"8px",color:auto?th.accent:"#475569",fontFamily:th.font,fontSize:"10px",letterSpacing:"2px",cursor:"pointer"}}>🤖 AUTO: {auto?"ON":"OFF"}</button>
+          <button onClick={()=>setShopOpen(s=>!s)} style={{padding:"11px",background:shopOpen?`${th.accent}18`:"rgba(255,255,255,.03)",border:`1px solid ${shopOpen?th.accent+"60":"rgba(255,255,255,.07)"}`,borderRadius:"8px",color:shopOpen?th.accent:"#475569",fontFamily:th.font,fontSize:"10px",letterSpacing:"2px",cursor:"pointer"}}>🛒 {isTechy?"UPGRADES":"LUCK SHOP"}</button>
+        </div>
+
+        {auto&&<div style={{textAlign:"center",fontSize:"10px",color:th.muted,letterSpacing:"1px"}}>Rolling every ~{SPEED_MS[speedLvl-1]}ms · {fmt(coins)} coins earned</div>}
+
+        {/* Shop */}
+        {shopOpen&&(
+          <div style={{...card,animation:"slideDown .2s ease-out"}}>
+            <div style={{fontFamily:th.font,fontSize:"9px",letterSpacing:"3px",color:th.muted,marginBottom:"12px"}}>⭐ LUCK UPGRADES</div>
+            <div style={{display:"flex",flexDirection:"column",gap:"6px",marginBottom:"16px"}}>
+              {LUCK_SHOP.map(item=>(
+                <div key={item.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(255,255,255,.02)",border:"1px solid rgba(255,255,255,.05)",borderRadius:"7px",padding:"8px 11px"}}>
+                  <div><div style={{fontSize:"12px",color:"#cbd5e1"}}>{item.name}</div><div style={{fontSize:"9px",color:"#4ade80",marginTop:"1px"}}>{item.label}</div></div>
+                  <button onClick={()=>buyLuck(item)} disabled={coins<item.cost} style={{background:coins>=item.cost?`${th.accent}20`:"rgba(255,255,255,.03)",border:`1px solid ${coins>=item.cost?th.accent+"60":"rgba(255,255,255,.06)"}`,borderRadius:"6px",padding:"5px 11px",color:coins>=item.cost?th.accent:"#334155",fontSize:"10px",cursor:coins<item.cost?"not-allowed":"pointer",whiteSpace:"nowrap"}}>💰 {fmt(item.cost)}</button>
+                </div>
+              ))}
+            </div>
+            <div style={{fontFamily:th.font,fontSize:"9px",letterSpacing:"3px",color:th.muted,marginBottom:"12px"}}>⚡ SPEED UPGRADES</div>
+            <div style={{display:"flex",flexDirection:"column",gap:"6px"}}>
+              {SPEED_SHOP.map(item=>{const owned=speedLvl>=item.level;return(
+                <div key={item.level} style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(255,255,255,.02)",border:"1px solid rgba(255,255,255,.05)",borderRadius:"7px",padding:"8px 11px",opacity:owned?.5:1}}>
+                  <div><div style={{fontSize:"12px",color:"#cbd5e1"}}>{item.name}</div><div style={{fontSize:"9px",color:"#60a5fa",marginTop:"1px"}}>Interval: {item.label}</div></div>
+                  <button onClick={()=>buySpeed(item)} disabled={owned||coins<item.cost} style={{background:owned?"rgba(34,197,94,.1)":coins>=item.cost?"rgba(96,165,250,.14)":"rgba(255,255,255,.03)",border:`1px solid ${owned?"rgba(34,197,94,.3)":coins>=item.cost?"rgba(96,165,250,.4)":"rgba(255,255,255,.06)"}`,borderRadius:"6px",padding:"5px 11px",color:owned?"#4ade80":coins>=item.cost?"#60a5fa":"#334155",fontSize:"10px",cursor:(owned||coins<item.cost)?"not-allowed":"pointer",whiteSpace:"nowrap"}}>{owned?"✓ Owned":`💰 ${fmt(item.cost)}`}</button>
+                </div>
+              );})}
+            </div>
+          </div>
+        )}
+
+        {/* Redeem */}
+        <div style={card}>
+          <div style={{display:"flex",alignItems:"center",gap:"6px",marginBottom:"10px"}}><span>🔑</span><span style={{fontFamily:th.font,fontSize:"9px",letterSpacing:"3px",color:th.muted}}>REDEEM CODE</span></div>
+          <div style={{display:"flex",gap:"7px"}}>
+            <input value={codeInput} onChange={e=>setCodeInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&redeem()} placeholder={isTechy?"enter_code...":"Enter code..."} style={{flex:1,background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",borderRadius:"7px",padding:"9px 12px",color:"#e2e8f0",fontSize:"12px",fontFamily:th.font}}/>
+            <button onClick={redeem} style={{padding:"9px 16px",background:`${th.accent}20`,border:`1px solid ${th.accent}60`,borderRadius:"7px",color:th.accent,fontFamily:th.font,fontSize:"10px",letterSpacing:"1px"}}>REDEEM</button>
+          </div>
+          <div style={{fontSize:"9px",color:th.muted,marginTop:"6px"}}>Try: AURA2024 · LUCKYSTAR · FREEGEMS · PRIMORDIAL · UPDATE1</div>
+        </div>
+
+        {/* History */}
+        <div style={card}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"11px"}}>
+            <div style={{display:"flex",alignItems:"center",gap:"8px"}}><span style={{fontFamily:th.font,fontSize:"9px",letterSpacing:"3px",color:th.muted}}>ROLL HISTORY</span><span style={{color:th.muted,fontSize:"10px"}}>{rolls.toLocaleString()} rolls</span></div>
+            <button onClick={()=>setCollOpen(true)} style={{display:"flex",alignItems:"center",gap:"5px",background:`${th.accent}14`,border:`1px solid ${th.accent}40`,borderRadius:"7px",padding:"5px 12px",color:th.accent,fontFamily:th.font,fontSize:"9px",letterSpacing:"1px",cursor:"pointer"}}>🏆 COLLECTION</button>
+          </div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:"5px",maxHeight:"220px",overflowY:"auto"}}>
+            {history.length===0?<div style={{color:th.muted,fontSize:"11px",letterSpacing:"2px",width:"100%",textAlign:"center",padding:"24px",fontFamily:th.font}}>{isTechy?"> awaiting input_":"Hit ROLL to begin"}</div>:history.map((a,i)=><Badge key={i} aura={a}/>)}
+          </div>
+        </div>
+
+        {/* Rarity reference */}
+        <div style={card}>
+          <div style={{fontFamily:th.font,fontSize:"9px",letterSpacing:"3px",color:th.muted,marginBottom:"10px"}}>RARITY REFERENCE</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"5px"}}>
+            {RK.map(k=>{const rc=RARITY[k];const w=rc.weight;const pct=w===0?"Code Only":w<.0001?`${(w/TOTAL_W*100).toFixed(6)}%`:w<.01?`${(w/TOTAL_W*100).toFixed(4)}%`:w<.1?`${(w/TOTAL_W*100).toFixed(3)}%`:`${(w/TOTAL_W*100).toFixed(1)}%`;return(<div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"4px 8px",background:`${rc.color}10`,border:`1px solid ${rc.color}22`,borderRadius:"5px"}}><span style={{color:rc.color,fontSize:"9px",fontFamily:th.font}}>{rc.label}</span><span style={{color:th.muted,fontSize:"7.5px"}}>{pct}</span></div>);})}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
